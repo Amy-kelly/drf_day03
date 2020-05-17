@@ -55,11 +55,23 @@ class BookModelDeSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("该出版社出版过此图书")
             return attrs
 
+class BookListSerializer(serializers.ListSerializer):
+    def update(self, instance, validated_data):
+        print(self)
+        print(instance)
+        print(validated_data)
+        print(self.child)
+        return [
+            self.child.update(instance,validated_data) for attrs in validated_data
+        ]
+
+
 class BookModelSerializerV2(serializers.ModelSerializer):
     class Meta:
         model = Book
         #fields应该是序列化和反序列化的并集
         fields = ("book_name", "price", "pic", "authors", "publish", "author_list", "publish_name",)
+        list_serializer_class = BookListSerializer
         extra_kwargs = {
             "book_name":{
                 "required":True,

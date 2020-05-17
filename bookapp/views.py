@@ -135,21 +135,61 @@ class BookAPIView2(APIView):
             "results":serializers.BookModelSerializerV2(book_obj).data
         })
 
+    # def patch(self,request,*args,**kwargs):
+    #     request_data = request.data
+    #     book_id = kwargs.get("id")
+    #     try:
+    #         book_obj = Book.objects.get(pk=book_id, is_delete=False)
+    #     except:
+    #         return Response({
+    #             "status": 500,
+    #             "message": "图书不存在",
+    #         })
+    #     book_ser = serializers.BookModelSerializerV2(data=request_data, instance=book_obj, partial=True)
+    #     book_ser.is_valid(raise_exception=True)
+    #     book_ser.save()
+    #     return Response({
+    #         "status": 200,
+    #         "message": "更新图书成功",
+    #         "results": serializers.BookModelSerializerV2(book_obj).data
+    #     })
+
     def patch(self,request,*args,**kwargs):
         request_data = request.data
         book_id = kwargs.get("id")
-        try:
-            book_obj = Book.objects.get(pk=book_id, is_delete=False)
-        except:
+        if book_id and isinstance(request_data,dict):
+            book_ids = [book_id,]
+            request_data = [request_data,]
+        elif not book_id and isinstance(request_data,list):
+            book_ids = []
+            for dic in request_data:
+                pk = dic.pop("pk",None)
+                if pk:
+                    book_ids.append(pk)
+                else:
+                    return Response({
+                        "status":500,
+                        "message":"ID不存在"
+                    })
+        else:
             return Response({
-                "status": 500,
-                "message": "图书不存在",
+                "status":500,
+                "message":"数据不存在或格式有误"
             })
-        book_ser = serializers.BookModelSerializerV2(data=request_data, instance=book_obj, partial=True)
+        book_list = []
+        new_data = []
+        for index,pk in enumerate(book_ids):
+            try:
+                book_obj = Book.objects.get(pk=pk)
+                book_list.append(book_obj)
+                new_data.append(request_data[index])
+            except:
+                continue
+        book_ser = serializers.BookModelSerializerV2(data=new_data, instance=book_list, partial=True, many=True)
         book_ser.is_valid(raise_exception=True)
         book_ser.save()
         return Response({
-            "status": 200,
-            "message": "更新图书成功",
-            "results": serializers.BookModelSerializerV2(book_obj).data
+            "status":200,
+            "message":"更新成功",
+            "results":serializers.BookModelSerializerV2(book_list, many=True).data
         })
