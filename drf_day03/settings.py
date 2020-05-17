@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'bookapp',
     'eshopapp',
     'firstapp',
+    'secondapp',
 ]
 
 MIDDLEWARE = [

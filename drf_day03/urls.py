@@ -25,4 +25,6 @@ urlpatterns = [
     url(r'^media/(?P<path>.*)',serve,{"document_root":settings.MEDIA_ROOT}),
     path("bookapp/",include("bookapp.urls")),
     path("eshopapp/",include("eshopapp.urls")),
+    path("firstapp/",include("firstapp.urls")),
+    path("secondapp/",include("secondapp.urls")),
 ]

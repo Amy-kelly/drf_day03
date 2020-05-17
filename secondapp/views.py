@@ -1,6 +1,9 @@
 from django.shortcuts import render
 
 # Create your views here.
+from django.shortcuts import render
+
+# Create your views here.
 from rest_framework.generics import GenericAPIView, ListCreateAPIView
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, CreateModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
